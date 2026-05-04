@@ -34,12 +34,12 @@ data.forEach(p => {
     if (p.current > 80) color = "red";
     else if (p.current >= 70) color = "darkgreen";
 
-    var marker = L.circleMarker([p.lat, p.lon], {
-        radius: 6,
-        color: color,
-        fillColor: color,
-        fillOpacity: 0.8
-    }).addTo(map);
+   var icon = L.icon({
+    iconUrl: 'feeder_icon.png',
+    iconSize: [30, 30]
+});
+
+var marker = L.marker([p.lat, p.lon], { icon: icon }).addTo(map);
 
     marker.bindPopup(p.popup);
 
