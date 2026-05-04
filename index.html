@@ -1,1 +1,66 @@
-//https://ehabprog23.github.io/AlMajd_SLFP_map/
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8" />
+<title>SLFP Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+html, body, #map { height: 100%; margin: 0; }
+.label { font-size: 10px; font-weight: bold; }
+</style>
+
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+
+var map = L.map('map').setView([25.3, 51.5], 12);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+// بيانات تجريبية (لازم تتغير ببياناتك)
+var data = [
+{
+  lat: 25.6751,
+  lon: 51.5280,
+  asset: "SLFP-001",
+  current: 82,
+  popup: "<b>Asset:</b> SLFP-001<br><b>Current:</b> 82%"
+}
+];
+
+data.forEach(p => {
+
+    let color = "green";
+    if (p.current > 80) color = "red";
+    else if (p.current >= 70) color = "darkgreen";
+
+    var marker = L.circleMarker([p.lat, p.lon], {
+        radius: 6,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.8
+    }).addTo(map);
+
+    marker.bindPopup(p.popup);
+
+    L.marker([p.lat, p.lon], {
+        icon: L.divIcon({
+            className: 'label',
+            html: p.asset
+        })
+    }).addTo(map);
+
+});
+
+</script>
+
+</body>
+</html>
