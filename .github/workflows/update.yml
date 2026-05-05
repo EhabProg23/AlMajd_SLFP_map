@@ -1,5 +1,4 @@
 name: Update Map Data
-
 on:
 push:
 paths:
