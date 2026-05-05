@@ -1,59 +1,59 @@
 name: Update Map Data
 on: 
-push: 
-paths:
-- data.xlsx
-schedule:
-- cron: '*/10 * * * *'
+  push: 
+    paths:
+      - data.xlsx
+  schedule:
+    - cron: '*/10 * * * *'
 jobs:
-build:
-runs-on: ubuntu-latest
-steps:
-  - name: Checkout
-    uses: actions/checkout@v3
-  - name: Setup Python
-    uses: actions/setup-python@v4
-    with:
-      python-version: '3.x'
-  - name: Install dependencies
-    run: pip install pandas openpyxl
-  - name: Convert Excel to JSON
-    run: |
-      python <<EOF
-      import pandas as pd, json
-      df = pd.read_excel("data.xlsx")
-      df.columns = [c.strip() for c in df.columns]
-      lat_col = "Latitude"
-      lon_col = "Longtitude"
-      asset_col = "ASSET_TAG"
-      current_col = "Running Currunt %"
-      def clean(v):
-          try:
-              return float(str(v).replace('%','').strip())
-          except:
-              return 0
-      data = []
-      for _, r in df.iterrows():
-          if pd.isna(r[lat_col]) or pd.isna(r[lon_col]):
-              continue
-          popup = f"<b>Asset:</b> {r[asset_col]}<br><b>Current:</b> {r[current_col]}%<br><hr>"
-          for c in df.columns:
-              if pd.notna(r[c]):
-                  popup += f"<b>{c}:</b> {r[c]}<br>"
-          data.append({
-              "lat": clean(r[lat_col]),
-              "lon": clean(r[lon_col]),
-              "asset": str(r[asset_col]),
-              "current": clean(r[current_col]),
-              "popup": popup
-          })
-      with open("data.json","w",encoding="utf-8") as f:
-          json.dump(data,f,ensure_ascii=False)
-      EOF
-  - name: Commit JSON
-    run: |
-      git config user.name "github-actions"
-      git config user.email "actions@github.com"
-      git add data.json
-      git commit -m "Auto update data" || echo "No changes"
-      git push
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: pip install pandas openpyxl
+    - name: Convert Excel to JSON
+      run: |
+        python <<EOF
+        import pandas as pd, json
+        df = pd.read_excel("data.xlsx")
+        df.columns = [c.strip() for c in df.columns]
+        lat_col = "Latitude"
+        lon_col = "Longtitude"
+        asset_col = "ASSET_TAG"
+        current_col = "Running Currunt %"
+        def clean(v):
+            try:
+                return float(str(v).replace('%','').strip())
+            except:
+                return 0
+        data = []
+        for _, r in df.iterrows():
+            if pd.isna(r[lat_col]) or pd.isna(r[lon_col]):
+                continue
+            popup = f"<b>Asset:</b> {r[asset_col]}<br><b>Current:</b> {r[current_col]}%<br><hr>"
+            for c in df.columns:
+                if pd.notna(r[c]):
+                    popup += f"<b>{c}:</b> {r[c]}<br>"
+            data.append({
+                "lat": clean(r[lat_col]),
+                "lon": clean(r[lon_col]),
+                "asset": str(r[asset_col]),
+                "current": clean(r[current_col]),
+                "popup": popup
+            })
+        with open("data.json","w",encoding="utf-8") as f:
+            json.dump(data,f,ensure_ascii=False)
+        EOF
+    - name: Commit JSON
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git add data.json
+        git commit -m "Auto update data" || echo "No changes"
+        git push
