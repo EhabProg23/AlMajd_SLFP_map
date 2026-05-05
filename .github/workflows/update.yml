@@ -1,6 +1,6 @@
 name: Update Map Data
-on: 
-  push: 
+on:
+  push:
     paths:
       - data.xlsx
   schedule:
